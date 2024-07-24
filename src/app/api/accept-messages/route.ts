@@ -7,11 +7,8 @@ export async function POST(req: Request) {
   await dbConnect();
 
   const session = await getServerSession(authOptions);
-  const user: User = session?.user as User; // Type assertion
-  // what is the use of type assertion here?
-  // console.log(user);
 
-  if (!user || !session) {
+  if (!session || !session.user) {
     return Response.json(
       {
         success: false,
@@ -20,11 +17,17 @@ export async function POST(req: Request) {
       { status: 401 }
     );
   }
+
+  const user = session.user;
   const userId = user._id;
+  const userEmail = user.email;
+  // const userId = user._id;
   const { acceptMessages } = await req.json();
   try {
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      { _id: userId },
+    const updatedUser = await UserModel.findOneAndUpdate(
+      {
+        $or: [{ _id: userId }, { email: userEmail }],
+      },
       { isAcceptingMessage: acceptMessages },
       { new: true }
     );
@@ -59,8 +62,8 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   await dbConnect();
   const session = await getServerSession(authOptions);
-  const user: User = session?.user as User;
-  if (!user || !session) {
+
+  if (!session || !session.user) {
     return Response.json(
       {
         success: false,
@@ -69,10 +72,17 @@ export async function GET(req: Request) {
       { status: 401 }
     );
   }
+
+  const user = session.user;
   const userId = user._id;
+  const userEmail = user.email;
+
   try {
-    const user = await UserModel.findById(userId);
-    if (!user) {
+    const dbUser = await UserModel.findOne({
+      $or: [{ email: userEmail }, { _id: userId }],
+    });
+    // console.log(dbUser);
+    if (!dbUser) {
       return Response.json(
         {
           success: false,
@@ -81,15 +91,17 @@ export async function GET(req: Request) {
         { status: 404 }
       );
     }
+
     return Response.json(
       {
         success: true,
         message: "User found",
-        isAcceptingMessage: user.isAcceptingMessage,
+        isAcceptingMessage: dbUser.isAcceptingMessage,
       },
       { status: 200 }
     );
   } catch (error) {
+    console.error("Error fetching user:", error);
     return Response.json(
       {
         success: false,

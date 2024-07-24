@@ -21,12 +21,13 @@ export async function GET(req: Request) {
   }
 
   const userId = new mongoose.Types.ObjectId(user?._id); // now we will do aggregation
+  const userEmail = user?.email;
   // console.log(userId);
   try {
     const user = await UserModel.aggregate([
       {
         $match: {
-          _id: userId,
+          $or: [{ _id: userId }, { email: userEmail }],
         },
       },
       { $unwind: "$messages" },

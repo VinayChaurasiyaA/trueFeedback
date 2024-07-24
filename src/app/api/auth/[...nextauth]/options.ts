@@ -2,13 +2,17 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel, { User } from "@/model/User";
 import { Awaitable, NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-// import bcrypt from "bcryptjs";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 
 // Define a type for credentials
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
@@ -49,7 +53,6 @@ export const authOptions: NextAuthOptions = {
           }
           // console.log(user.password);
           // console.log(credentials.password);
-          //FIX: Check if this is the correct way to compare passwords
           const isCorrect = await bcrypt.compare(
             credentials.password,
             user.password
@@ -89,14 +92,64 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async jwt({ token, user }) {
+
+    async jwt({ token, user, account, profile }) {
       if (user) {
-        token._id = user._id?.toString();
-        token.isVerified = user?.isVerified;
-        token.isAcceptingMessage = user?.isAcceptingMessage;
-        token.username = user?.username;
+        token._id = user._id;
+        token.isVerified = user.isVerified;
+        token.username = user.username;
+        token.isAcceptingMessage = user.isAcceptingMessage;
+        // console.log("User object:", user); // Debugging
+        token._id = user._id;
+        token.username = user.username;
+      } else if (account?.provider === "google" && profile?.email) {
+        await dbConnect();
+        let dbUser = await UserModel.findOne({ email: profile.email });
+        if (!dbUser) {
+          dbUser = new UserModel({
+            username: profile?.name?.trim().split(" ")[1] ?? "",
+            email: profile.email,
+            password: await bcrypt.hash("12345678", 10),
+            isVerified: true,
+            isAcceptingMessage: true,
+            messages: [],
+            verifyCodeExpiry: new Date(),
+            verifyCode: "123456",
+          });
+          // console.log(dbUser);
+          await dbUser.save();
+        }
+
+        token._id = (dbUser?._id as string)?.toString();
+        token.isVerified = dbUser.isVerified;
+        token.username = dbUser.username;
+        token.isAcceptingMessage = dbUser.isAcceptingMessage;
       }
+      // console.log(token);
       return token;
     },
+    async signIn({ account, profile }): Promise<string | boolean> {
+      // Your code here
+      // console.log(profile);
+      // console.log("google clicked lol");
+      await dbConnect();
+      let dbUser = await UserModel.findOne({ email: profile?.email });
+      if (!dbUser) {
+        // how to just take the first name of the user
+        dbUser = new UserModel({
+          username: profile?.name?.trim().split(" ")[0],
+          email: profile?.email,
+          password: "12345678",
+          isVerified: true,
+          isAcceptingMessage: true,
+          messages: [],
+          verifyCodeExpiry: new Date(),
+          verifyCode: "123456",
+        });
+        await dbUser.save();
+      }
+      return true;
+    },
+    // Your code here
   },
 };

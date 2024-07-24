@@ -41,7 +41,6 @@ export async function POST(request: Request) {
         );
       } else {
         // update the existing user with the new data
-        // TODO: hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
         const expiryDate = new Date();
         verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -58,7 +57,6 @@ export async function POST(request: Request) {
       }
     } else {
       // create a new user entirely
-      // FIX: hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
       const expiryDate = new Date();
       verifyCode = Math.floor(100000 + Math.random() * 900000).toString();

@@ -25,6 +25,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { useToast } from "@/components/ui/use-toast";
 import { signIn } from "next-auth/react";
 import { EyeIcon } from "lucide-react";
+import GoogleSignInButton from "next-auth/providers/google";
 // import { router } from "next/router";
 
 const page = () => {
@@ -147,7 +148,9 @@ const page = () => {
             </Button>
           </form>
         </Form>
-
+        <Button className="text center" onClick={() => signIn("google")}>
+          Sign in with Google
+        </Button>
         <div className=" text-center mt-8">
           <p className="text-center text-gray-500">
             Don't have an account ?{" "}

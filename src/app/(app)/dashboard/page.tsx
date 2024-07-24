@@ -22,10 +22,12 @@ const dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [profileURL, setProfileURL] = useState("");
+  const [ifNotFound, setIfNotFound] = useState("");
   const form = useForm<AcceptMessageForm>({
     resolver: zodResolver(acceptMessageSchema),
   });
   const { data: session } = useSession();
+  // console.log("Session:", session); // Debugging
 
   const { register, setValue, watch } = form;
   const { toast } = useToast();
@@ -34,7 +36,8 @@ const dashboard = () => {
     setIsSwitchLoading(true);
     try {
       const response = await axios.get("/api/accept-messages");
-      setValue("acceptMessages", response.data.isAcceptingMessge);
+      // console.log(response.data.isAcceptingMessage);
+      setValue("acceptMessages", response.data.isAcceptingMessage);
       // console.log(response.data.isAcceptingMessge);
     } catch (error) {
       toast({
@@ -53,7 +56,7 @@ const dashboard = () => {
       setIsSwitchLoading(true);
       try {
         const response = await axios.get("/api/get-messages");
-        console.log(response.data.messages[0]);
+        // console.log(response.data.messages[0]);
         setMessages(response.data.messages);
         if (refresh) {
           toast({
@@ -78,8 +81,17 @@ const dashboard = () => {
   const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message) => message._id !== messageId));
   };
+
+  const fixUserName = async () => {
+    const response = await axios.post("/api/accept-messages", {
+      acceptMessages: !acceptMessages,
+    });
+    console.log(response, "from /api/accept-messages POST wala");
+    setIfNotFound(response.data.updatedUser.username);
+  };
   useEffect(() => {
     if (!session || !session.user) return;
+    fixUserName();
 
     if (typeof window !== "undefined") {
       // setBaseURL(`${window.location.protocol}//${window.location.host}`);
@@ -100,9 +112,11 @@ const dashboard = () => {
   const handleSwitchChange = async () => {
     setIsSwitchLoading(true);
     try {
-      await axios.post("/api/accept-messages", {
+      const response = await axios.post("/api/accept-messages", {
         acceptMessages: !acceptMessages,
       });
+      // console.log(response, "from /api/accept-messages POST wala");
+      // setIfNotFound(response.data.updatedUser.username);
       setValue("acceptMessages", !acceptMessages);
       toast({
         title: "Accept message status updated",
@@ -123,7 +137,8 @@ const dashboard = () => {
 
   // console.log(session?.user.username);
   // const { username } = session?.user as User;
-  const username = session?.user.username || "";
+  // console.log(session?.user.username || );
+  const username = session?.user.username || ifNotFound || " ";
   // let baseURL;
   // const baseURL = `${window.location.protocol}//${window.location.host}`;
 
