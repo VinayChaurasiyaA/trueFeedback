@@ -128,12 +128,17 @@ export const authOptions: NextAuthOptions = {
       // console.log(token);
       return token;
     },
+    // use this below signIn only if i am making from the google
+
     async signIn({ account, profile }): Promise<string | boolean> {
       // Your code here
-      // console.log(profile);
       // console.log("google clicked lol");
+      // console.log("Account : ", account?.providerAccountId);
+
       await dbConnect();
-      let dbUser = await UserModel.findOne({ email: profile?.email });
+      let dbUser = await UserModel.findOne({
+        $or: [{ email: profile?.email }, { _id: account?.providerAccountId }],
+      });
       if (!dbUser) {
         // how to just take the first name of the user
         dbUser = new UserModel({
