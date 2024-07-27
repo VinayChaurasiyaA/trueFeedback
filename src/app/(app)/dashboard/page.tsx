@@ -82,16 +82,22 @@ const dashboard = () => {
     setMessages(messages.filter((message) => message._id !== messageId));
   };
 
-  const fixUserName = async () => {
-    const response = await axios.post("/api/accept-messages", {
-      acceptMessages: !acceptMessages,
-    });
-    console.log(response, "from /api/accept-messages POST wala");
-    setIfNotFound(response.data.updatedUser.username);
-  };
+  // const fixUserName = async () => {
+  //   const response = await axios.post("/api/accept-messages", {
+  //     acceptMessages: !acceptMessages,
+  //   });
+  //   console.log(response, "from /api/accept-messages POST wala");
+  //   setIfNotFound(response.data.updatedUser.username);
+  // };
   useEffect(() => {
     if (!session || !session.user) return;
-    fixUserName();
+
+    const username =
+      session?.user.username ||
+      session?.user?.name?.trim().split(" ")[0] ||
+      " ";
+    // console.log("Usernane :", username);
+    // fixUserName();
 
     if (typeof window !== "undefined") {
       // setBaseURL(`${window.location.protocol}//${window.location.host}`);
@@ -138,7 +144,9 @@ const dashboard = () => {
   // console.log(session?.user.username);
   // const { username } = session?.user as User;
   // console.log(session?.user.username || );
-  const username = session?.user.username || ifNotFound || " ";
+  // console.log(session?.user.name?.trim().split(" ")[0]);
+  // const username =
+  //   session?.user.username || session?.user?.name?.trim().split(" ")[0] || " ";
   // let baseURL;
   // const baseURL = `${window.location.protocol}//${window.location.host}`;
 

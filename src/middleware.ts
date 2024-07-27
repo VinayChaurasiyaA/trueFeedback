@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
 // This function can be marked `async` if using `await` inside
+// NextRequest is a subclass of Request that adds several properties and methods. It's used in middleware
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request, secret: process.env.SECRET });
+  // console.log(token?.name?.trim().split(" ")[0]);
   // console.log(request.url);
   // console.log(request.url.endsWith("/dashboard"));
   if (

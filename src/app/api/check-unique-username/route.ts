@@ -60,7 +60,7 @@ export async function GET(request: Request) {
       }
     );
   } catch (error) {
-    console.log("error in checking unique username", error);
+    // console.log("error in checking unique username", error);
     return Response.json(
       {
         success: false,

@@ -57,7 +57,7 @@ const page = () => {
         password: data.password,
       });
 
-      console.log(response);
+      // console.log(response);
 
       if (response?.error) {
         toast({
@@ -150,9 +150,9 @@ const page = () => {
             </Button>
           </form>
         </Form>
-        {/* <Button className="text center" onClick={() => signIn("google")}>
+        <Button className="text center" onClick={() => signIn("google")}>
           Sign in with Google
-        </Button> */}
+        </Button>
         <div className=" text-center mt-8">
           <p className="text-center text-gray-500">
             Don't have an account ?{" "}
