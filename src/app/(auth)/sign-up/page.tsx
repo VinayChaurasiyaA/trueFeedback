@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
@@ -126,118 +126,139 @@ const page = () => {
     }
   };
 
+  const clickOnX = (e: MouseEvent<HTMLSpanElement, globalThis.MouseEvent>) => {
+    e.preventDefault();
+    const element = document.querySelector(".hide");
+    element?.classList.add("hidden");
+  };
+
   return (
-    <div className="flex justify-center text-secondary-foreground items-center min-h-screen bg-gray-700">
-      <div className="w-full max-w-md p-8 space-y-8 bg-secondary rounded-lg shadow-md">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            TrueFeed Back
-          </h1>
-          <p className="text-secondary-foreground">
-            Create an account to start using TrueFeed Back
-          </p>
-        </div>
+    <>
+      <div className="hide block text-secondary-foreground bg-yellow-600 font-bold">
+        <span className="ml-2 mr-2">
+          You cannot login through creating new account so kindly login through
+          google account as creating account is for VINAY only
+        </span>
+        <span
+          className="ml-[14rem] cursor-pointer"
+          onClick={(e) => clickOnX(e)}
+        >
+          X
+        </span>
+      </div>
+      <div className="flex justify-center text-secondary-foreground items-center min-h-screen bg-gray-700">
+        <div className="w-full max-w-md p-8 space-y-8 bg-secondary rounded-lg shadow-md">
+          <div className="text-center">
+            <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
+              TrueFeed Back
+            </h1>
+            <p className="text-secondary-foreground">
+              Create an account to start using TrueFeed Back
+            </p>
+          </div>
 
-        <Form {...form}>
-          <form className="sppace-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="username"
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        debounceUsername(e.target.value);
-                      }}
-                    />
-                  </FormControl>
-                  {checkUsername && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  <p
-                    className={`text-sm ${
-                      usernameMessage === "Username is available"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {usernameMessage}
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
+          <Form {...form}>
+            <form className="sppace-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
                       <Input
-                        placeholder="password"
-                        type={showPassword ? "text" : "password"}
+                        placeholder="username"
                         {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          debounceUsername(e.target.value);
+                        }}
                       />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 flex items-center px-2"
-                        onClick={togglePasswordVisibility}
-                      >
-                        {showPassword ? (
-                          <EyeIcon size={20} />
-                        ) : (
-                          <EyeOff size={20} />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    {checkUsername && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    <p
+                      className={`text-sm ${
+                        usernameMessage === "Username is available"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {usernameMessage}
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="password"
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 flex items-center px-2"
+                          onClick={togglePasswordVisibility}
+                        >
+                          {showPassword ? (
+                            <EyeIcon size={20} />
+                          ) : (
+                            <EyeOff size={20} />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <Button className="mt-2" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
-                </>
-              ) : (
-                "Sign Up"
-              )}
-            </Button>
-          </form>
-        </Form>
+              <Button className="mt-2" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please
+                    wait
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
+              </Button>
+            </form>
+          </Form>
 
-        <div className=" text-center mt-8">
-          <p className="text-center text-gray-500">
-            Already have an account?{" "}
-            <Link href="/sign-in" className="text-blue-500 hover:underline">
-              Sign In
-            </Link>
-          </p>
+          <div className=" text-center mt-8">
+            <p className="text-center text-gray-500">
+              Already have an account?{" "}
+              <Link href="/sign-in" className="text-blue-500 hover:underline">
+                Sign In
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

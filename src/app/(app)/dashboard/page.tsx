@@ -15,6 +15,7 @@ import { Loader2, RefreshCcw } from "lucide-react";
 import message from "@/app/u/[username]/page";
 import MessageCard from "@/components/MessageCard/MessageCard";
 import { ApiResponse } from "@/types/ApiResponse";
+import { SkeletonCard } from "@/components/Skeleton/Skeleton";
 
 const dashboard = () => {
   type AcceptMessageForm = z.infer<typeof acceptMessageSchema>;
@@ -161,6 +162,7 @@ const dashboard = () => {
   if (!session || !session.user) {
     return <div>Please login</div>;
   }
+  // TODO: SHOW A DIV WHERE IT SAYS OTHER THAN THE CREATER YOU CANNOT LOGIN USING SIGNUP SO KINDLY LOGIN THROUGH YOUR GOOGLE ACCOUNT
 
   return (
     <div className="my-8 mx-8 md:mx-8 lg:mx-auto p-6 bg-secondary text-secondary-foreground rounded w-full max-w-6xl">
@@ -211,19 +213,23 @@ const dashboard = () => {
           <RefreshCcw className="h-4 w-4" />
         )}
       </Button>
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {messages.length > 0 ? (
-          messages.map((message, index) => (
-            <MessageCard
-              // key={message._id}
-              message={message}
-              onMessageDelete={handleDeleteMessage}
-            />
-          ))
-        ) : (
-          <p>No messages to display</p>
-        )}
-      </div>
+      {isLoading ? (
+        <SkeletonCard />
+      ) : (
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {messages.length > 0 ? (
+            messages.map((message, index) => (
+              <MessageCard
+                // key={message._id}
+                message={message}
+                onMessageDelete={handleDeleteMessage}
+              />
+            ))
+          ) : (
+            <p>No messages to display</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
