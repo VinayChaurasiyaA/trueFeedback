@@ -1,7 +1,7 @@
 "use client";
 import { acceptMessageSchema } from "@/schema/acceptMessageSchema";
 import axios, { AxiosError } from "axios";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -219,11 +219,15 @@ const dashboard = () => {
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
           {messages.length > 0 ? (
             messages.map((message, index) => (
-              <MessageCard
-                // key={message._id}
-                message={message}
-                onMessageDelete={handleDeleteMessage}
-              />
+              <Suspense
+                key={index + Math.random() * 10}
+                fallback={<SkeletonCard />}
+              >
+                <MessageCard
+                  message={message}
+                  onMessageDelete={handleDeleteMessage}
+                />
+              </Suspense>
             ))
           ) : (
             <p>No messages to display</p>

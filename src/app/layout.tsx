@@ -7,6 +7,8 @@ import AuthProvider from "@/context/AuthProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/Navbar/Navbar";
 import { SiteFooter } from "@/components/Footer/Footer";
+import { Suspense } from "react";
+import { LoaderCircleIcon } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +33,13 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Navbar />
-            {children}
+            <Suspense
+              fallback={
+                <LoaderCircleIcon size={32} className="pb-2 animate-spin" />
+              }
+            >
+              {children}
+            </Suspense>
             <SiteFooter />
             <Toaster />
           </ThemeProvider>
